@@ -11,3 +11,5 @@ Will expand on this in the future, but you can always pull a request
 * Import the SQL
 
 NOTE This is not FINAL version it will have bugs
+
+All credits for this amazing inventory goes to https://github.com/dutchplayers
