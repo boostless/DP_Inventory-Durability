@@ -2,7 +2,7 @@ local number = 0
 local weapon = nil
 local weapons = {
     [-1074790547] = 'WEAPON_ASSAULTRIFLE',
-    [453432689] = 'WEAPON_PISTOl'
+    [453432689] = 'WEAPON_PISTOL'
 }
 
 
