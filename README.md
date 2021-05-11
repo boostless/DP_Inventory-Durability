@@ -7,6 +7,7 @@ Will expand on this in the future, but you can always pull a request
 # How to install
 * Add c_durability.lua to your client/addons
 * Add s_durability.lua to your server
+* Change out the inventory.js with provided one
 * Change out the original DP_Inventory server/main.lua and client/main.lua
 * Import the SQL
 
