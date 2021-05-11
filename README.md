@@ -8,6 +8,7 @@ Will expand on this in the future, but you can always pull a request
 * Add c_durability.lua to your client/addons
 * Add s_durability.lua to your server
 * Change out the inventory.js with provided one
+* Change out the ui.css with provided one (You can change the style ofcourse but I added some classes that I needed)
 * Change out the original DP_Inventory server/main.lua and client/main.lua
 * Import the SQL
 
