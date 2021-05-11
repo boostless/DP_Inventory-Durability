@@ -1,5 +1,5 @@
-RegisterServerEvent('DP_Inventory:addDurability')
-AddEventHandler('DP_Inventory:addDurability', function(player, item)
+RegisterServerEvent('DP_Inventory:setDurability')
+AddEventHandler('DP_Inventory:setDurability', function(player, item)
     local xPlayer = ESX.GetPlayerFromId(player)
     if string.find(item, 'WEAPON_') then
         MySQL.Async.execute('INSERT INTO inventory_durability (owner,item) VALUES (@owner, @item)', {
@@ -43,7 +43,7 @@ function getDurability(item, xPlayer)
 end
 
 AddEventHandler('esx:onAddInventoryItem', function(player, item, count)
-    TriggerEvent('DP_Inventory:addDurability', player, item)
+    TriggerEvent('DP_Inventory:setDurability', player, item)
 end)
 
 function tprint (tbl, indent)
