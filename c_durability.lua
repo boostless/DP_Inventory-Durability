@@ -5,6 +5,8 @@ local weapons = {
     [453432689] = 'WEAPON_PISTOl'
 }
 
+
+
 Citizen.CreateThread(function()
     while true do
         local playerPed = PlayerPedId()
@@ -14,6 +16,9 @@ Citizen.CreateThread(function()
             weapon = GetSelectedPedWeapon(playerPed)
         end
         if number >= 10 then
+                
+             -- You can use this event for removing durability 
+               
             TriggerServerEvent('DP_Inventory:removeDurability', weapons[weapon], 1)
             number = 0
         end
