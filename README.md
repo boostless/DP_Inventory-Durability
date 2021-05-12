@@ -14,6 +14,7 @@ Will expand on this in the future, but you can always pull a request
 # Change log
 * 1.0.0 Added durability support for all items
 * 1.0.1 Bug fixes with them items dont get removed, and multiple durability adding
+* 1.0.2 More fixes, added config file for usage
 
 NOTE This is not FINAL version it will have bugs
 
