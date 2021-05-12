@@ -1,18 +1,19 @@
-RegisterServerEvent('DP_Inventory:setDurability')
-AddEventHandler('DP_Inventory:setDurability', function(player, item)
+RegisterServerEvent('DP_Inventory:addDurability')
+AddEventHandler('DP_Inventory:addDurability', function(player, item)
     local xPlayer = ESX.GetPlayerFromId(player)
-    if string.find(item, 'WEAPON_') then
+    --if string.find(item, 'WEAPON_') then
         MySQL.Async.execute('INSERT INTO inventory_durability (owner,item) VALUES (@owner, @item)', {
             ['@owner'] = xPlayer.identifier,
             ['@item'] = item
         })
-    end
+    --end
 end)
 
 RegisterServerEvent('DP_Inventory:removeDurability')
-AddEventHandler('DP_Inventory:removeDurability', function(item, remove_a)
+AddEventHandler('DP_Inventory:removeDurability', function(item, remove_a, source)
     local _source = source
     local xPlayer = ESX.GetPlayerFromId(_source)
+
     local durability = getDurability(item, xPlayer)
     if durability ~= 0 then
         local remove = durability - remove_a
@@ -43,8 +44,20 @@ function getDurability(item, xPlayer)
 end
 
 AddEventHandler('esx:onAddInventoryItem', function(player, item, count)
-    TriggerEvent('DP_Inventory:setDurability', player, item)
+    TriggerEvent('DP_Inventory:addDurability', player, item)
 end)
+
+RegisterServerEvent('esx:useItem')
+AddEventHandler('esx:useItem', function(item)
+    local _source = source
+    local xPlayer = ESX.GetPlayerFromId(_source)
+    local durability = getDurability(item, xPlayer)
+    if not string.find(item, 'WEAPON_') and durability ~= 0 then
+        TriggerEvent('DP_Inventory:removeDurability', item, 1, _source)
+        xPlayer.addInventoryItem(item, 1)
+    end
+end)
+
 
 function tprint (tbl, indent)
 	if not indent then indent = 0 end
