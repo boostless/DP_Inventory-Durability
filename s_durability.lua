@@ -36,15 +36,29 @@ ESX.RegisterServerCallback('DP_Inventory:checkDurability', function(source, cb, 
 end)
 
 function getDurability(item, xPlayer)
-    local data =MySQL.Sync.fetchAll('SELECT * FROM inventory_durability WHERE owner = @owner AND item = @item', {
+    local data = MySQL.Sync.fetchAll('SELECT * FROM inventory_durability WHERE owner = @owner AND item = @item', {
         ['@owner'] =  xPlayer.identifier,
         ['@item'] = item
     })
-    return data[1].durability
+    if #data ~= 0 then
+        return data[1].durability
+    else
+        return nil
+    end
+end
+
+function removeFromDB(item, xPlayer)
+    local data =MySQL.Sync.fetchAll('DELETE FROM inventory_durability WHERE owner = @owner AND item = @item', {
+        ['@owner'] =  xPlayer.identifier,
+        ['@item'] = item
+    })
 end
 
 AddEventHandler('esx:onAddInventoryItem', function(player, item, count)
-    TriggerEvent('DP_Inventory:addDurability', player, item)
+    local xPlayer = ESX.GetPlayerFromId(player)
+    if getDurability(item, xPlayer) == nil then
+        TriggerEvent('DP_Inventory:addDurability', player, item)
+    end
 end)
 
 RegisterServerEvent('esx:useItem')
@@ -52,12 +66,15 @@ AddEventHandler('esx:useItem', function(item)
     local _source = source
     local xPlayer = ESX.GetPlayerFromId(_source)
     local durability = getDurability(item, xPlayer)
-    if not string.find(item, 'WEAPON_') and durability ~= 0 then
-        TriggerEvent('DP_Inventory:removeDurability', item, 1, _source)
+    local removed_d = durability - 2
+    print('USE:ITEM', removed_d)
+    if not string.find(item, 'WEAPON_') and removed_d ~= 0 then
+        TriggerEvent('DP_Inventory:removeDurability', item, 2, _source)
         xPlayer.addInventoryItem(item, 1)
+    elseif removed_d == 0 then
+        removeFromDB(item, xPlayer)
     end
 end)
-
 
 function tprint (tbl, indent)
 	if not indent then indent = 0 end
