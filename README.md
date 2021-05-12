@@ -12,7 +12,8 @@ Will expand on this in the future, but you can always pull a request
 * Change out the original DP_Inventory server/main.lua and client/main.lua
 * Import the SQL
 # Change log
-* Added durability support for all items
+* 1.0.0 Added durability support for all items
+* 1.0.1 Bug fixes with them items dont get removed, and multiple durability adding
 
 NOTE This is not FINAL version it will have bugs
 
