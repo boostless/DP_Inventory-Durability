@@ -439,10 +439,12 @@ function loadItems()
 end
 
 function getDurability(item, duras)
-	local allDur = duras
-	for i=1, #allDur do
-		if item == allDur[i].item then
-			local durability = allDur[i].durability
+	if type(duras) == 'boolean' then
+		return -1
+	end
+	for i=1, #duras do
+		if item == duras[i].item then
+			local durability = duras[i].durability
 			return durability
 		end
 	end
