@@ -1,6 +1,14 @@
-RegisterServerEvent('DP_Inventory:addDurability')
-AddEventHandler('DP_Inventory:addDurability', function(player, item)
+local itemsConfig = {
+    ['bread'] = {usage = 2},
+    ['water'] = {usage = 3}
+}
+
+
+RegisterServerEvent('DP_Inventory:setDurability')
+AddEventHandler('DP_Inventory:setDurability', function(player, item)
     local xPlayer = ESX.GetPlayerFromId(player)
+
+
     --if string.find(item, 'WEAPON_') then
         MySQL.Async.execute('INSERT INTO inventory_durability (owner,item) VALUES (@owner, @item)', {
             ['@owner'] = xPlayer.identifier,
@@ -10,8 +18,15 @@ AddEventHandler('DP_Inventory:addDurability', function(player, item)
 end)
 
 RegisterServerEvent('DP_Inventory:removeDurability')
-AddEventHandler('DP_Inventory:removeDurability', function(item, remove_a, source)
-    local _source = source
+AddEventHandler('DP_Inventory:removeDurability', function(item, remove_a, src)
+    local _source
+
+    if src ~= nil then
+        _source = source
+    else
+        _source = src
+    end
+
     local xPlayer = ESX.GetPlayerFromId(_source)
 
     local durability = getDurability(item, xPlayer)
@@ -57,7 +72,7 @@ end
 AddEventHandler('esx:onAddInventoryItem', function(player, item, count)
     local xPlayer = ESX.GetPlayerFromId(player)
     if getDurability(item, xPlayer) == nil then
-        TriggerEvent('DP_Inventory:addDurability', player, item)
+        TriggerEvent('DP_Inventory:setDurability', player, item)
     end
 end)
 
@@ -66,10 +81,9 @@ AddEventHandler('esx:useItem', function(item)
     local _source = source
     local xPlayer = ESX.GetPlayerFromId(_source)
     local durability = getDurability(item, xPlayer)
-    local removed_d = durability - 2
-    print('USE:ITEM', removed_d)
+    local removed_d = durability - itemsConfig[item].usage
     if not string.find(item, 'WEAPON_') and removed_d ~= 0 then
-        TriggerEvent('DP_Inventory:removeDurability', item, 2, _source)
+        TriggerEvent('DP_Inventory:removeDurability', item, itemsConfig[item].usage, _source)
         xPlayer.addInventoryItem(item, 1)
     elseif removed_d == 0 then
         removeFromDB(item, xPlayer)
