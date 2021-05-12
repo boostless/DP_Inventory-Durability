@@ -1,7 +1,9 @@
 local itemsConfig = {
     ['bread'] = {usage = 2},
-    ['water'] = {usage = 3}
+    ['water'] = {usage = 4}
 }
+
+local Debug = true
 
 
 RegisterServerEvent('DP_Inventory:setDurability')
@@ -19,19 +21,24 @@ end)
 
 RegisterServerEvent('DP_Inventory:removeDurability')
 AddEventHandler('DP_Inventory:removeDurability', function(item, remove_a, src)
-    local _source
+    local _source = src
 
-    if src ~= nil then
-        _source = source
-    else
-        _source = src
-    end
+    --if src ~= nil then
+        --_source = source
+    --else
+        --_source = src
+    --end
 
     local xPlayer = ESX.GetPlayerFromId(_source)
 
     local durability = getDurability(item, xPlayer)
     if durability ~= 0 then
         local remove = durability - remove_a
+
+        if remove < 0 then
+            remove = 0
+        end
+
         MySQL.Async.execute('UPDATE inventory_durability SET durability = @remove WHERE owner = @owner AND item = @item', {
             ['@owner'] = xPlayer.identifier,
             ['@item'] = item,
@@ -82,13 +89,30 @@ AddEventHandler('esx:useItem', function(item)
     local xPlayer = ESX.GetPlayerFromId(_source)
     local durability = getDurability(item, xPlayer)
     local removed_d = durability - itemsConfig[item].usage
-    if not string.find(item, 'WEAPON_') and removed_d ~= 0 then
+
+    if Debug then
+        print('ITEM: ', item, 'USAGE: ', itemsConfig[item].usage, 'CUR_DURA: ', durability, 'LEFT_DURA: ', removed_d)
+    end
+
+    if not string.find(item, 'WEAPON_') and removed_d > 0 then
         TriggerEvent('DP_Inventory:removeDurability', item, itemsConfig[item].usage, _source)
         xPlayer.addInventoryItem(item, 1)
-    elseif removed_d == 0 then
-        removeFromDB(item, xPlayer)
+    elseif removed_d < 0 then
+        if xPlayer.getInventoryItem(item).count > 0  then
+            removeFromDB(item, xPlayer)
+            TriggerEvent('DP_Inventory:setDurability', _source, item)
+            if Debug then
+                print('ITEM: ', item, 'WAS REMOVED AND READDED BECAUSE ', xPlayer.getInventoryItem(item).count, 'LEFT')
+            end
+        else
+            removeFromDB(item, xPlayer)
+            if Debug then
+                print('ITEM: ', item, 'REMOVED NONE LEFT')
+            end
+        end
     end
 end)
+
 
 function tprint (tbl, indent)
 	if not indent then indent = 0 end
