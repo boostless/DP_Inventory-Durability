@@ -1,6 +1,8 @@
 local itemsConfig = {
     ['bread'] = {usage = 2},
-    ['water'] = {usage = 4}
+    ['water'] = {usage = 4},
+    ['ammunition_rifle'] = {usage = 4},
+    ['ammunition_pistol'] = {usage = 4}
 }
 
 local Debug = true
@@ -85,6 +87,9 @@ end)
 
 RegisterServerEvent('esx:useItem')
 AddEventHandler('esx:useItem', function(item)
+
+    if string.find(item, 'WEAPON_') then return end
+
     local _source = source
     local xPlayer = ESX.GetPlayerFromId(_source)
     local durability = getDurability(item, xPlayer)
@@ -94,7 +99,7 @@ AddEventHandler('esx:useItem', function(item)
         print('ITEM: ', item, 'USAGE: ', itemsConfig[item].usage, 'CUR_DURA: ', durability, 'LEFT_DURA: ', removed_d)
     end
 
-    if not string.find(item, 'WEAPON_') and removed_d > 0 then
+    if removed_d > 0 then
         TriggerEvent('DP_Inventory:removeDurability', item, itemsConfig[item].usage, _source)
         xPlayer.addInventoryItem(item, 1)
     elseif removed_d < 0 then
